@@ -164,7 +164,7 @@ _reverts=(
 )
 
 _configure_options=(
-  PACKAGE_VERSION="${pkgver}-${pkgrel}"
+  PACKAGE_VERSION="${epoch}:${pkgver}-${pkgrel}"
   FREETYPE="pkg-config freetype2"
   BUILD_FREETYPE="pkg-config freetype2"
   --enable-nls
@@ -401,7 +401,7 @@ _package_grub-efi() {
   rm -f "${pkgdir}/usr/lib/grub/${_EFI_ARCH}-efi"/*.image || true
   rm -f "${pkgdir}/usr/lib/grub/${_EFI_ARCH}-efi"/{kernel.exec,gdb_grub,gmodule.pl} || true
 
-  sed -e "s/%PKGVER%/${pkgver}-${pkgrel}/" < "${srcdir}/sbat.csv" > "${pkgdir}/usr/share/grub/sbat.csv"
+  sed -e "s/%PKGVER%/${epoch}:${pkgver}-${pkgrel}/" < "${srcdir}/sbat.csv" > "${pkgdir}/usr/share/grub/sbat.csv"
 }
 
 _package_grub-emu() {
