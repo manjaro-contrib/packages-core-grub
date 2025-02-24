@@ -27,11 +27,12 @@ pkgname=(
 )
 pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
+epoch=2
 _pkgver=2.12
 _unifont_ver='16.0.02'
-pkgver=${_pkgver/-/}
-pkgrel=3
-epoch=2
+#pkgver=${_pkgver/-/}
+pkgver='2.12.r212.g4dc616657'
+pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
