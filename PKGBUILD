@@ -193,17 +193,19 @@ prepare() {
   cd "${srcdir}/grub/"
 
   echo "Apply backports..."
-  local _c
+  local _c _l
   for _c in "${_backports[@]}"; do
-    git log --oneline -1 "${_c}"
-    git cherry-pick -n "${_c}"
+    if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
+    git log --oneline "${_l}" "${_c}"
+    git cherry-pick --mainline 1 --no-commit "${_c}"
   done
 
   echo "Apply reverts..."
-  local _c
+  local _c _l
   for _c in "${_reverts[@]}"; do
-    git log --oneline -1 "${_c}"
-    git revert -n "${_c}"
+    if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
+    git log --oneline "${_l}" "${_c}"
+    git revert --mainline 1 --no-commit "${_c}"
   done
 
   echo "Patch to enable GRUB_COLOR_* variables in grub-mkconfig..."
