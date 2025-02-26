@@ -124,9 +124,9 @@ source=(
   'grub-use-efivarfs.patch'
   'grub-dont-call-fwsetup-at-all.patch'
   'fgrep-is-obsolescent-using-grep-F.patch'
-  '0001-grub-maybe-quiet.patch'
-  '0002-grub-gettext-quiet.patch'
-  '0003-grub-quick-boot.patch'
+  #'0001-grub-maybe-quiet.patch'
+  #'0002-grub-gettext-quiet.patch'
+  #'0003-grub-quick-boot.patch'
   'background.png'
   'update-grub'
   'install-grub'
@@ -149,9 +149,6 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'c316a8c52747a61d7b8a612b545491df9c4ba259bcfa8f923705298104eee4c4dcbdcb1d9b3473e355adab9538c4ebd4703cea63cabd6046f9887a54bd7853fb'
         'e1fdd23b992ac48a532f54e91cd77bdd636f938a9eba6bef7fd863a8cd3f5a9bc0d77122a86dc4253d3b1958ade1ea2756cbb79571794c8efdaa97c501cde3c7'
         'bd2c2a833370007e284a9799765502cf599f141207cab33548040f611c8bf16c3326ed7f7f39bb9ebdd7ededf732aae3d933bb03e7fefd5d85af08e5eead4c4b'
-        '67d63f0861bd84a04ddc1c90d2f660ba3981e56ce00578ebdf008b603e7fe679fb633757baff12aa1727a237b5060493297f2eae456c6c619d239941e30f9fe2'
-        '29a1ccc44d8f5e5bfc6db719eaecda245c3cae7874fca527a81e3aa72b88c9d01a25a9f175e7d48d297ac65c919f0a0a0afcb686bf9619e6f5db3ffb11915795'
-        '6203eea3ab6eecc9332a2fa649bad8bde7ce9a02424f7abf0f19ac1fdecc512625c536ec6f7b639c9e55de5b65ab48543645ada33795030b97cccd1eebb1d0c1'
         'b9530aeea084a0bbe0feedcdb9363b9933fab30f90337a79a9e2a535a2a084cbbf6458483a52b749a032858f8dd7b185e88f8fa659081886ef706eea456fc22d'
         '8b93a9564443d1509235c712e82a9aeb1d824df445eccd94f8c5f4d9050e3b1d89edefbc060b79d7ec029a2f53b19d8f31d3a82c7b8f13e8ca109751557b8b03'
         '03ddf64cebc328bd7eb7cac2ffee3e85cd91bf5138b037d775119728da0d8143e9e6a253e620747988995482971f07a0baaf66c012b0d47c1a89f20de00d44b7'
@@ -161,6 +158,9 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         '7d66232583d30bbade009b56ee733e51ae38ae6eec870b30494e540009b0391a26217a2c1e6980d43b2d3188e1e5e2815601dc0d3ee3b1d2ae9829820efbec28')
 
 _backports=(
+  # current git master for loads of security fixes
+  # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
+  "grub-${_pkgver}..4dc6166571645780c459dde2cdc1b001a5ec844c"
 )
 
 _reverts=(
@@ -199,7 +199,7 @@ prepare() {
   local _c _l
   for _c in "${_backports[@]}"; do
     if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
-    git log --oneline "${_l}" "${_c}"
+    git --no-pager log --oneline "${_l}" "${_c}"
     git cherry-pick --mainline 1 --no-commit "${_c}"
   done
 
@@ -207,7 +207,7 @@ prepare() {
   local _c _l
   for _c in "${_reverts[@]}"; do
     if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
-    git log --oneline "${_l}" "${_c}"
+    git --no-pager log --oneline "${_l}" "${_c}"
     git revert --mainline 1 --no-commit "${_c}"
   done
 
@@ -239,13 +239,13 @@ prepare() {
   echo "fgrep is obsolescent using grep -F"
   patch -Np1 -i "${srcdir}/fgrep-is-obsolescent-using-grep-F.patch"
 
-  echo "Add Ubuntu patches"
-  echo "0001"
-  patch -Np1 -i "${srcdir}/0001-grub-maybe-quiet.patch"
-  echo "002"
-  patch -Np1 -i "${srcdir}/0002-grub-gettext-quiet.patch"
-  echo "0003"
-  patch -Np1 -i "${srcdir}/0003-grub-quick-boot.patch"
+#  echo "Add Ubuntu patches"
+#  echo "0001"
+#  patch -Np1 -i "${srcdir}/0001-grub-maybe-quiet.patch"
+#  echo "002"
+#  patch -Np1 -i "${srcdir}/0002-grub-gettext-quiet.patch"
+#  echo "0003"
+#  patch -Np1 -i "${srcdir}/0003-grub-quick-boot.patch"
 
   echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
   sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
