@@ -143,7 +143,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         '441bc2a47606a7f0853c571dbf578040c415bc4bd088bc645c1d6d930e552184af707a7cc677eaf92763e34eb455de50bd6fda9dd7de5be87ccdd35cea03df7c'
         'b21e36cee8a8d1cb62f30e06bfccb29ca589ff4a8fbd8f07fbe3342f25ee6a141a5e92c36387752b9bbc76c2ff32d5f1dbf839af8e56ff706bfe752f2e9dd9f5'
         '71e77b75b4f88554aabfcd5da2fcd0e150dbc199ec1779e458ee935663a7080002069a4944cb22e01a9a0af3a6434fc312db7e03888fe23c2156d25f2ba96c0a'
-        '70384cd6f8af0a717b45033ae7fb1052ac43ac2698874be04da4e7bfa2c3315e8fd45a6a03371320d57bc75093ced19a863fa67abc9355ed820e65a31fec4dc8'
+        'aad6e72b30e26578d30c5b682718accc39bb9c98c28682254c44c54625b52c445a9c081c141735f2de5ad8546dcdf228b3c7c75eaac6bef61c5f47e88d845438'
         'c316a8c52747a61d7b8a612b545491df9c4ba259bcfa8f923705298104eee4c4dcbdcb1d9b3473e355adab9538c4ebd4703cea63cabd6046f9887a54bd7853fb'
         'e1fdd23b992ac48a532f54e91cd77bdd636f938a9eba6bef7fd863a8cd3f5a9bc0d77122a86dc4253d3b1958ade1ea2756cbb79571794c8efdaa97c501cde3c7'
         'bd2c2a833370007e284a9799765502cf599f141207cab33548040f611c8bf16c3326ed7f7f39bb9ebdd7ededf732aae3d933bb03e7fefd5d85af08e5eead4c4b'
@@ -216,6 +216,15 @@ prepare() {
   echo "Patch to support dropins for default configuration..."
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
 
+  echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
+  sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
+
+  echo "Fix mkinitcpio 'rw' FS#36275..."
+  sed 's| ro | rw |g' -i "util/grub.d/10_linux.in"
+
+  echo "Fix OS naming FS#33393..."
+  sed 's|GNU/Linux|Linux|' -i "util/grub.d/10_linux.in"
+
   # https://github.com/calamares/calamares/issues/918
   echo "Use efivarfs modules"
   patch -Np1 -i "${srcdir}/grub-use-efivarfs.patch"
@@ -242,14 +251,6 @@ prepare() {
 #  echo "0003"
 #  patch -Np1 -i "${srcdir}/0003-grub-quick-boot.patch"
 
-  echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
-  sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
-
-  echo "Fix mkinitcpio 'rw' FS#36275..."
-  sed 's| ro | rw |g' -i "util/grub.d/10_linux.in"
-
-  echo "Fix OS naming FS#33393..."
-  sed 's|GNU/Linux|Linux|' -i "util/grub.d/10_linux.in"
 
   echo "Pull in latest language files..."
   ./linguas.sh

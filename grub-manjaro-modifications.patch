@@ -30,18 +30,6 @@ diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
 index e8b01c0d0..c3dd34a59 100644
 --- a/util/grub.d/10_linux.in
 +++ b/util/grub.d/10_linux.in
-@@ -29,9 +29,9 @@ export TEXTDOMAINDIR="@localedir@"
- CLASS="--class gnu-linux --class gnu --class os"
- 
- if [ "x${GRUB_DISTRIBUTOR}" = "x" ] ; then
--  OS=GNU/Linux
-+  OS=Linux
- else
--  OS="${GRUB_DISTRIBUTOR} GNU/Linux"
-+  OS="${GRUB_DISTRIBUTOR} Linux"
-   CLASS="--class $(echo ${GRUB_DISTRIBUTOR} | tr 'A-Z' 'a-z' | cut -d' ' -f1|LC_ALL=C sed 's,[^[:alnum:]_],_,g') ${CLASS}"
- fi
- 
 @@ -92,9 +92,11 @@ linux_entry ()
    if [ x$type != xsimple ] ; then
        case $type in
@@ -65,26 +53,6 @@ index e8b01c0d0..c3dd34a59 100644
        save_default_entry | grub_add_tab
    fi
  
-@@ -138,10 +140,17 @@ linux_entry ()
-     fi
-     printf '%s\n' "${prepare_boot_cache}" | sed "s/^/$submenu_indentation/"
-   fi
--  message="$(gettext_printf "Loading Linux %s ..." ${version})"
-+
-+  if [ "x${GRUB_ROOT_FS_RO}" = "xtrue" ]; then
-+    grub_root_fs_mode=ro
-+  else
-+    grub_root_fs_mode=rw
-+  fi
-+
-+  message="$(gettext_printf "Loading Linux %s ..." "${version}")"
-   sed "s/^/$submenu_indentation/" << EOF
- 	echo	'$(echo "$message" | grub_quote)'
--	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
-+	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ${grub_root_fs_mode} ${args}
- EOF
-   if test -n "${initrd}" ; then
-     # TRANSLATORS: ramdisk isn't identifier. Should be translated.
 @@ -192,6 +192,19 @@
  	done ;;
  esac
