@@ -2,8 +2,6 @@ From: Julian Andres Klode <julian.klode@canonical.com>
 Date: Tue, 25 Jul 2023 15:35:52 +0200
 Subject: Add configure option to reduce visual clutter at boot time
 
-Modified for Manjaro by: Philip Müller <philm@manjaro.org>
-
 If this option is enabled, then do all of the following:
 
 Don't display introductory message about line editing unless we're
@@ -35,21 +33,10 @@ Last-Update: 2021-09-24
 
 Patch-Name: maybe-quiet.patch
 ---
- config.h.in                       |  2 ++
- configure.ac                      | 16 ++++++++++++++++
- grub-core/boot/i386/pc/boot.S     | 11 +++++++++++
- grub-core/boot/i386/pc/diskboot.S | 26 ++++++++++++++++++++++++++
- grub-core/kern/main.c             | 17 +++++++++++++++++
- grub-core/kern/rescue_reader.c    |  2 ++
- grub-core/normal/main.c           | 11 +++++++++++
- grub-core/normal/menu.c           | 15 +++++++++++++--
- util/grub.d/10_linux.in           | 17 +++++++++++++----
- 9 files changed, 111 insertions(+), 6 deletions(-)
 
-diff --git a/config.h.in b/config.h.in
-index 9b1d399..9d6f369 100644
---- a/config.h.in
-+++ b/config.h.in
+diff --unified --recursive --text a/config.h.in b/config.h.in
+--- a/config.h.in	2025-03-01 11:37:53.536776788 -0700
++++ b/config.h.in	2025-03-01 11:39:15.340270160 -0700
 @@ -16,6 +16,8 @@
  /* Define to 1 to enable disk cache statistics.  */
  #define DISK_CACHE_STATS @DISK_CACHE_STATS@
@@ -59,13 +46,12 @@ index 9b1d399..9d6f369 100644
  
  /* We don't need those.  */
  #define MINILZO_CFG_SKIP_LZO_PTR 1
-diff --git a/configure.ac b/configure.ac
-index f19356e..dcf9f72 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -2068,6 +2068,17 @@ else
+diff --unified --recursive --text a/configure.ac b/configure.ac
+--- a/configure.ac	2025-03-01 11:37:55.431585884 -0700
++++ b/configure.ac	2025-03-01 11:39:15.340499855 -0700
+@@ -2092,6 +2092,17 @@
  fi
- AC_SUBST([UBUNTU_RECOVERY])
+ AC_SUBST([enable_grub_protect])
  
 +AC_ARG_ENABLE([quiet-boot],
 +              [AS_HELP_STRING([--enable-quiet-boot],
@@ -81,7 +67,7 @@ index f19356e..dcf9f72 100644
  LIBS=""
  
  AC_SUBST([FONT_SOURCE])
-@@ -2343,5 +2354,10 @@ echo "With stack smashing protector: Yes"
+@@ -2373,5 +2384,10 @@
  else
  echo "With stack smashing protector: No"
  fi
@@ -92,10 +78,9 @@ index f19356e..dcf9f72 100644
 +fi
  echo "*******************************************************"
  ]
-diff --git a/grub-core/boot/i386/pc/boot.S b/grub-core/boot/i386/pc/boot.S
-index 2bd0b2d..b0c0f22 100644
---- a/grub-core/boot/i386/pc/boot.S
-+++ b/grub-core/boot/i386/pc/boot.S
+diff --unified --recursive --text a/grub-core/boot/i386/pc/boot.S b/grub-core/boot/i386/pc/boot.S
+--- a/grub-core/boot/i386/pc/boot.S	2025-03-01 11:37:53.541515715 -0700
++++ b/grub-core/boot/i386/pc/boot.S	2025-03-01 11:39:15.340679388 -0700
 @@ -19,6 +19,9 @@
  
  #include <grub/symbol.h>
@@ -106,7 +91,7 @@ index 2bd0b2d..b0c0f22 100644
  
  /*
   *  defines for the code go here
-@@ -249,9 +252,17 @@ real_start:
+@@ -249,9 +252,17 @@
  	/* save drive reference first thing! */
  	pushw	%dx
  
@@ -124,10 +109,9 @@ index 2bd0b2d..b0c0f22 100644
  	/* set %si to the disk address packet */
  	movw	$disk_address_packet, %si
  
-diff --git a/grub-core/boot/i386/pc/diskboot.S b/grub-core/boot/i386/pc/diskboot.S
-index c1addc0..9b6d7a7 100644
---- a/grub-core/boot/i386/pc/diskboot.S
-+++ b/grub-core/boot/i386/pc/diskboot.S
+diff --unified --recursive --text a/grub-core/boot/i386/pc/diskboot.S b/grub-core/boot/i386/pc/diskboot.S
+--- a/grub-core/boot/i386/pc/diskboot.S	2025-03-01 11:37:53.541605688 -0700
++++ b/grub-core/boot/i386/pc/diskboot.S	2025-03-01 11:39:15.340751520 -0700
 @@ -18,6 +18,9 @@
  
  #include <grub/symbol.h>
@@ -151,7 +135,7 @@ index c1addc0..9b6d7a7 100644
  	.file	"diskboot.S"
  
  	.text
-@@ -50,11 +59,14 @@ _start:
+@@ -50,11 +59,14 @@
  	/* save drive reference first thing! */
  	pushw	%dx
  
@@ -166,7 +150,7 @@ index c1addc0..9b6d7a7 100644
  	/* this sets up for the first run through "bootloop" */
  	movw	$LOCAL(firstlist), %di
  
-@@ -279,7 +291,10 @@ LOCAL(copy_buffer):
+@@ -279,7 +291,10 @@
  	/* restore addressing regs and print a dot with correct DS
  	   (MSG modifies SI, which is saved, and unused AX and BX) */
  	popw	%ds
@@ -177,7 +161,7 @@ index c1addc0..9b6d7a7 100644
  	popa
  
  	/* check if finished with this dataset */
-@@ -295,8 +310,11 @@ LOCAL(copy_buffer):
+@@ -295,8 +310,11 @@
  /* END OF MAIN LOOP */
  
  LOCAL(bootit):
@@ -189,7 +173,7 @@ index c1addc0..9b6d7a7 100644
  	popw	%dx	/* this makes sure %dl is our "boot" drive */
  	ljmp	$0, $(GRUB_BOOT_MACHINE_KERNEL_ADDR + 0x200)
  
-@@ -320,6 +338,14 @@ LOCAL(general_error):
+@@ -320,6 +338,14 @@
  /* go here when you need to stop the machine hard after an error condition */
  LOCAL(stop):	jmp	LOCAL(stop)
  
@@ -204,11 +188,10 @@ index c1addc0..9b6d7a7 100644
  notification_string:	.asciz "loading"
  
  notification_step:	.asciz "."
-diff --git a/grub-core/kern/main.c b/grub-core/kern/main.c
-index 731c07c..f21376e 100644
---- a/grub-core/kern/main.c
-+++ b/grub-core/kern/main.c
-@@ -265,17 +265,27 @@ reclaim_module_space (void)
+diff --unified --recursive --text a/grub-core/kern/main.c b/grub-core/kern/main.c
+--- a/grub-core/kern/main.c	2025-03-01 11:37:55.097954330 -0700
++++ b/grub-core/kern/main.c	2025-03-01 12:04:50.426115672 -0700
+@@ -303,6 +303,10 @@
  void __attribute__ ((noreturn))
  grub_main (void)
  {
@@ -216,8 +199,10 @@ index 731c07c..f21376e 100644
 +  struct grub_term_output *term;
 +#endif
 +
-   /* First of all, initialize the machine.  */
-   grub_machine_init ();
+ #ifdef GRUB_STACK_PROTECTOR
+   /*
+    * This call should only be made from a function that does not return because
+@@ -318,6 +322,11 @@
  
    grub_boot_time ("After machine init.");
  
@@ -229,14 +214,15 @@ index 731c07c..f21376e 100644
    /* This breaks flicker-free boot on EFI systems, so disable it there. */
  #ifndef GRUB_MACHINE_EFI
    /* Hello.  */
-   grub_setcolorstate (GRUB_TERM_COLOR_HIGHLIGHT);
+@@ -325,6 +334,7 @@
    grub_printf ("Welcome to GRUB!\n\n");
    grub_setcolorstate (GRUB_TERM_COLOR_STANDARD);
-+#endif
  #endif
++#endif
  
    /* Init verifiers API. */
-@@ -315,5 +325,12 @@ grub_main (void)
+   grub_verifiers_init ();
+@@ -366,5 +376,12 @@
    grub_boot_time ("After execution of embedded config. Attempt to go to normal mode");
  
    grub_load_normal_mode ();
@@ -249,25 +235,23 @@ index 731c07c..f21376e 100644
 +
    grub_rescue_run ();
  }
-diff --git a/grub-core/kern/rescue_reader.c b/grub-core/kern/rescue_reader.c
-index dcd7d44..a93524e 100644
---- a/grub-core/kern/rescue_reader.c
-+++ b/grub-core/kern/rescue_reader.c
-@@ -78,7 +78,9 @@ grub_rescue_read_line (char **line, int cont,
- void __attribute__ ((noreturn))
- grub_rescue_run (void)
- {
+diff --unified --recursive --text a/grub-core/kern/rescue_reader.c b/grub-core/kern/rescue_reader.c
+--- a/grub-core/kern/rescue_reader.c	2025-03-01 11:37:54.538961152 -0700
++++ b/grub-core/kern/rescue_reader.c	2025-03-01 11:48:11.537229453 -0700
+@@ -91,7 +91,9 @@
+       while (1);
+     }
+ 
 +#if QUIET_BOOT
    grub_printf ("Entering rescue mode...\n");
 +#endif
  
    while (1)
      {
-diff --git a/grub-core/normal/main.c b/grub-core/normal/main.c
-index bd44310..4f10c00 100644
---- a/grub-core/normal/main.c
-+++ b/grub-core/normal/main.c
-@@ -408,6 +408,15 @@ static grub_err_t
+diff --unified --recursive --text a/grub-core/normal/main.c b/grub-core/normal/main.c
+--- a/grub-core/normal/main.c	2025-03-01 11:37:55.166728578 -0700
++++ b/grub-core/normal/main.c	2025-03-01 11:39:15.341078094 -0700
+@@ -408,6 +408,15 @@
  grub_normal_read_line_real (char **line, int cont, int nested)
  {
    const char *prompt;
@@ -283,7 +267,7 @@ index bd44310..4f10c00 100644
  
    if (cont)
      /* TRANSLATORS: it's command line prompt.  */
-@@ -460,7 +469,9 @@ grub_cmdline_run (int nested, int force_auth)
+@@ -464,7 +473,9 @@
        return;
      }
  
@@ -293,11 +277,10 @@ index bd44310..4f10c00 100644
  
    while (1)
      {
-diff --git a/grub-core/normal/menu.c b/grub-core/normal/menu.c
-index 6a90e09..350ed25 100644
---- a/grub-core/normal/menu.c
-+++ b/grub-core/normal/menu.c
-@@ -816,14 +816,18 @@ run_menu (grub_menu_t menu, int nested, int *auto_boot, int *notify_boot)
+diff --unified --recursive --text a/grub-core/normal/menu.c b/grub-core/normal/menu.c
+--- a/grub-core/normal/menu.c	2025-03-01 11:37:55.314026263 -0700
++++ b/grub-core/normal/menu.c	2025-03-01 11:54:24.730080713 -0700
+@@ -815,14 +815,18 @@
  static void
  notify_booting (grub_menu_entry_t entry, void *userdata)
  {
@@ -317,7 +300,7 @@ index 6a90e09..350ed25 100644
  }
  
  /* Callback invoked when a default menu entry executed because of a timeout
-@@ -872,6 +876,9 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
+@@ -871,6 +875,9 @@
        grub_menu_entry_t e;
        int auto_boot;
        int notify_boot;
@@ -327,36 +310,34 @@ index 6a90e09..350ed25 100644
  
        boot_entry = run_menu (menu, nested, &auto_boot, &notify_boot);
        if (boot_entry < 0)
-@@ -881,7 +888,11 @@ show_menu (grub_menu_t menu, int nested, int autobooted)
-       if (! e)
- 	continue; /* Menu is empty.  */
- 
--      grub_cls ();
+@@ -885,7 +892,11 @@
+ 					 &execution_callback, &notify_boot);
+       else
+ 	{
+-	  grub_cls ();
 +#if QUIET_BOOT
 +      /* Only clear the screen if we drew the menu in the first place.  */
 +      if (initial_timeout != 0)
 +#endif
 +	grub_cls ();
- 
-       if (auto_boot)
- 	grub_menu_execute_with_fallback (menu, e, autobooted,
-diff --git a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
-index b0860b2..887355d 100644
---- a/util/grub.d/10_linux.in
-+++ b/util/grub.d/10_linux.in
-@@ -21,6 +21,7 @@ prefix="@prefix@"
+ 	  grub_menu_execute_entry (e, 0);
+ 	}
+       if (autobooted)
+diff --unified --recursive --text a/util/grub.d/10_linux.in b/util/grub.d/10_linux.in
+--- a/util/grub.d/10_linux.in	2025-03-01 11:37:55.438618456 -0700
++++ b/util/grub.d/10_linux.in	2025-03-01 12:15:10.412972729 -0700
+@@ -20,6 +20,7 @@
+ prefix="@prefix@"
  exec_prefix="@exec_prefix@"
  datarootdir="@datarootdir@"
 +quiet_boot="@QUIET_BOOT@"
  
  . "$pkgdatadir/grub-mkconfig_lib"
  
-@@ -159,20 +160,28 @@ linux_entry ()
-     fi
-     printf '%s\n' "${prepare_boot_cache}" | sed "s/^/$submenu_indentation/"
-   fi
--  message="$(gettext_printf "Loading Linux %s ..." ${version})"
--  sed "s/^/$submenu_indentation/" << EOF
+@@ -151,18 +152,28 @@
+ 
+   message="$(gettext_printf "Loading Linux %s ..." "${version}")"
+   sed "s/^/$submenu_indentation/" << EOF
 +  if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
 +    message="$(gettext_printf "Loading Linux %s ..." ${version})"
 +    sed "s/^/$submenu_indentation/" << EOF
@@ -364,7 +345,7 @@ index b0860b2..887355d 100644
 +EOF
 +  fi
 +  sed "s/^/$submenu_indentation/" << EOF
- 	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ro ${args}
+ 	linux	${rel_dirname}/${basename} root=${linux_root_device_thisversion} ${grub_root_fs_mode} ${args}
  EOF
    if test -n "${initrd}" ; then
      # TRANSLATORS: ramdisk isn't identifier. Should be translated.
