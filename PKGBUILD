@@ -31,7 +31,7 @@ epoch=2
 _pkgver=2.12
 _unifont_ver='16.0.02'
 #pkgver=${_pkgver/-/}
-pkgver='2.12.r226.g56ccc5ed'
+pkgver='2.12.r212.g4dc616657'
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
@@ -116,6 +116,7 @@ source=(
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
   '0001-00_header-add-GRUB_COLOR_-variables.patch'
   '0003-support-dropins-for-default-configuration.patch'
+  '1001-loopback-ext.patch'
   'grub.default'
   'sbat.csv'
   'grub-export-path.patch'
@@ -140,6 +141,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
+        'b8316136261563a411d30fd44b71c20c8c8c65b94fd576ac4122ac40a15c8b948547c31b17cc31757f224dd2bb79fb8936aa0d20315e988ed1e9f5b55f649044'
         '441bc2a47606a7f0853c571dbf578040c415bc4bd088bc645c1d6d930e552184af707a7cc677eaf92763e34eb455de50bd6fda9dd7de5be87ccdd35cea03df7c'
         'b21e36cee8a8d1cb62f30e06bfccb29ca589ff4a8fbd8f07fbe3342f25ee6a141a5e92c36387752b9bbc76c2ff32d5f1dbf839af8e56ff706bfe752f2e9dd9f5'
         '71e77b75b4f88554aabfcd5da2fcd0e150dbc199ec1779e458ee935663a7080002069a4944cb22e01a9a0af3a6434fc312db7e03888fe23c2156d25f2ba96c0a'
@@ -158,7 +160,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
 _backports=(
   # current git master for loads of security fixes
   # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
-  "grub-${_pkgver}..56ccc5ed569869fd735074ccebeaa7aab058342d"
+  "grub-${_pkgver}..4dc6166571645780c459dde2cdc1b001a5ec844c"
 )
 
 _reverts=(
@@ -175,7 +177,7 @@ _configure_options=(
   --enable-grub-mkfont
   --enable-grub-mount
   --enable-quiet-boot
-  --enable-quick-boot
+  --enable-quick-boot  
   --prefix="/usr"
   --bindir="/usr/bin"
   --sbindir="/usr/bin"
@@ -215,6 +217,9 @@ prepare() {
 
   echo "Patch to support dropins for default configuration..."
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
+
+  echo "Patch: fs/ext2: Rework out-of-bounds read for inline and external exten"
+  patch -Np1 -i "${srcdir}/1001-loopback-ext.patch"
 
   # https://github.com/calamares/calamares/issues/918
   echo "Use efivarfs modules"
