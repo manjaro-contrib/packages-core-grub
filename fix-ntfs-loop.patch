@@ -1,0 +1,47 @@
+On some NTFS volumes GRUB would enter an infinite loop when
+next_attribute() returned NULL, which can happen in normal cases when
+the end of the attribute list is reached.
+This would trigger a NULL deref, but as the null page is mapped on the
+majority of firmware, an infinite loop would occur as the while loop
+didn't make any progress.
+
+Fixing this by verifying the value of at->attr_cur on the next iteration
+of the loop, after it has been set to the result of next_attribute().
+Also removing the redundant check against mft_end as the
+next_attribute() should handle that now.
+A pointer to the end of the buffer is stored in at->end, which is
+initialized the same way as mft_end was.
+
+Fixes: https://savannah.gnu.org/bugs/index.php?66855
+
+Reported-by: Andreas Klauer <andreas.klauer@metamorpher.de>
+Signed-off-by: B Horn <b@horn.uk>
+---
+ grub-core/fs/ntfs.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/grub-core/fs/ntfs.c b/grub-core/fs/ntfs.c
+index 960833a34..77531e627 100644
+--- a/grub-core/fs/ntfs.c
++++ b/grub-core/fs/ntfs.c
+@@ -311,8 +311,6 @@ free_attr (struct grub_ntfs_attr *at)
+ static grub_uint8_t *
+ find_attr (struct grub_ntfs_attr *at, grub_uint8_t attr)
+ {
+-  grub_uint8_t *mft_end;
+-
+   if (at->flags & GRUB_NTFS_AF_ALST)
+     {
+     retry:
+@@ -386,8 +384,7 @@ find_attr (struct grub_ntfs_attr *at, grub_uint8_t attr)
+       return NULL;
+     }
+   at->attr_cur = at->attr_nxt;
+-  mft_end = at->mft->buf + (at->mft->data->mft_size << GRUB_NTFS_BLK_SHR);
+-  while (at->attr_cur < mft_end && *at->attr_cur != 0xFF)
++  while (at->attr_cur && *at->attr_cur != 0xFF)
+     {
+       at->attr_nxt = next_attribute (at->attr_cur, at->end);
+       if (*at->attr_cur == GRUB_NTFS_AT_ATTRIBUTE_LIST)
+-- 
+2.48.1
