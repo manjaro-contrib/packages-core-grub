@@ -32,7 +32,7 @@ _pkgver=2.12
 _unifont_ver='16.0.02'
 #pkgver=${_pkgver/-/}
 pkgver='2.12.r226.g56ccc5ed'
-pkgrel=2
+pkgrel=3
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -116,6 +116,7 @@ source=(
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
   '0001-00_header-add-GRUB_COLOR_-variables.patch'
   '0003-support-dropins-for-default-configuration.patch'
+  'fix-ntfs-loop.patch'
   'grub.default'
   'sbat.csv'
   'grub-export-path.patch'
@@ -140,6 +141,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
+        'bd66835a7a28e6dd5ff51efb81ff99b8c391df33b470fafd7979d3a504160707d239536eed01e54b7862d739f2512bd5c06f2e5d6be63410cc4d5633928fb69d'
         '441bc2a47606a7f0853c571dbf578040c415bc4bd088bc645c1d6d930e552184af707a7cc677eaf92763e34eb455de50bd6fda9dd7de5be87ccdd35cea03df7c'
         'b21e36cee8a8d1cb62f30e06bfccb29ca589ff4a8fbd8f07fbe3342f25ee6a141a5e92c36387752b9bbc76c2ff32d5f1dbf839af8e56ff706bfe752f2e9dd9f5'
         '71e77b75b4f88554aabfcd5da2fcd0e150dbc199ec1779e458ee935663a7080002069a4944cb22e01a9a0af3a6434fc312db7e03888fe23c2156d25f2ba96c0a'
@@ -147,9 +149,9 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'c316a8c52747a61d7b8a612b545491df9c4ba259bcfa8f923705298104eee4c4dcbdcb1d9b3473e355adab9538c4ebd4703cea63cabd6046f9887a54bd7853fb'
         'e1fdd23b992ac48a532f54e91cd77bdd636f938a9eba6bef7fd863a8cd3f5a9bc0d77122a86dc4253d3b1958ade1ea2756cbb79571794c8efdaa97c501cde3c7'
         'bd2c2a833370007e284a9799765502cf599f141207cab33548040f611c8bf16c3326ed7f7f39bb9ebdd7ededf732aae3d933bb03e7fefd5d85af08e5eead4c4b'
-        '6da7e88ed74312c1afbc2ce5eaf75a1caba1d12fd56615785a2b9d7f5eb2d72877b170b841c5a77ddcc25854284c284479f1dfdc893a19905f0f98096e2e4c39'
+        'b6d152e20768b325e7236a0edcea0331deb6918a41f692a1714b0ade6eedf6c38fa92f74179fefa9e4442f1c8e33cc50d89294e9db1a3bea0f0e6c95ae9084e6'
         '29a1ccc44d8f5e5bfc6db719eaecda245c3cae7874fca527a81e3aa72b88c9d01a25a9f175e7d48d297ac65c919f0a0a0afcb686bf9619e6f5db3ffb11915795'
-        '51493e3aba31b51d11379e85e95657eccfcfeedf0c606bf5431ae2e8429c5035d4379211f03c240c61b3d64b5d124a4d08329179c8b29764d824db4ae77bab31'
+        '6e807c2b9d1065caa0ff3cfae73de005f39266f7bf538a360669f4996b6f2820e8570e61f0e7ea21c377ed7144b891e6bb774156bbb048ecaf484d827cb3a545'
         'b9530aeea084a0bbe0feedcdb9363b9933fab30f90337a79a9e2a535a2a084cbbf6458483a52b749a032858f8dd7b185e88f8fa659081886ef706eea456fc22d'
         '8b93a9564443d1509235c712e82a9aeb1d824df445eccd94f8c5f4d9050e3b1d89edefbc060b79d7ec029a2f53b19d8f31d3a82c7b8f13e8ca109751557b8b03'
         '03ddf64cebc328bd7eb7cac2ffee3e85cd91bf5138b037d775119728da0d8143e9e6a253e620747988995482971f07a0baaf66c012b0d47c1a89f20de00d44b7'
@@ -218,6 +220,11 @@ prepare() {
 
   echo "Patch to support dropins for default configuration..."
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
+  
+  echo "Patch to fix a NTFS regression..."
+  ## https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00179.html
+  ## https://gitlab.archlinux.org/archlinux/packaging/packages/grub/-/issues/12
+  patch -Np1 -i "${srcdir}/fix-ntfs-loop.patch"
 
   echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
   sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
@@ -247,11 +254,11 @@ prepare() {
   patch -Np1 -i "${srcdir}/fgrep-is-obsolescent-using-grep-F.patch"
 
   echo "Add Ubuntu patches"
-  echo "0001"
+  echo "Grub should be maybe quiet"
   patch -Np1 -i "${srcdir}/0001-grub-maybe-quiet.patch"
-  echo "002"
+  echo "Quiet gettext"
   patch -Np1 -i "${srcdir}/0002-grub-gettext-quiet.patch"
-  echo "0003"
+  echo "Add Quick boot"
   patch -Np1 -i "${srcdir}/0003-grub-quick-boot.patch"
 
 

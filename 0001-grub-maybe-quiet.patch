@@ -334,10 +334,12 @@ diff --unified --recursive --text a/util/grub.d/10_linux.in b/util/grub.d/10_lin
  
  . "$pkgdatadir/grub-mkconfig_lib"
  
-@@ -151,18 +152,28 @@
+@@ -149,20 +154,28 @@ linux_entry ()
+     grub_root_fs_mode=rw
+   fi
  
-   message="$(gettext_printf "Loading Linux %s ..." "${version}")"
-   sed "s/^/$submenu_indentation/" << EOF
+-  message="$(gettext_printf "Loading Linux %s ..." "${version}")"
+-  sed "s/^/$submenu_indentation/" << EOF
 +  if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
 +    message="$(gettext_printf "Loading Linux %s ..." ${version})"
 +    sed "s/^/$submenu_indentation/" << EOF
