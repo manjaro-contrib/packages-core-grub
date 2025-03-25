@@ -340,7 +340,7 @@ diff --unified --recursive --text a/util/grub.d/10_linux.in b/util/grub.d/10_lin
  
 -  message="$(gettext_printf "Loading Linux %s ..." "${version}")"
 -  sed "s/^/$submenu_indentation/" << EOF
-+  if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
++  if [ x"$quiet_boot" = x0 ]; then
 +    message="$(gettext_printf "Loading Linux %s ..." ${version})"
 +    sed "s/^/$submenu_indentation/" << EOF
  	echo	'$(echo "$message" | grub_quote)'
@@ -352,7 +352,7 @@ diff --unified --recursive --text a/util/grub.d/10_linux.in b/util/grub.d/10_lin
    if test -n "${initrd}" ; then
      # TRANSLATORS: ramdisk isn't identifier. Should be translated.
 -    message="$(gettext_printf "Loading initial ramdisk ...")"
-+    if [ x"$quiet_boot" = x0 ] || [ x"$type" != xsimple ]; then
++    if [ x"$quiet_boot" = x0 ]; then
 +      message="$(gettext_printf "Loading initial ramdisk ...")"
 +      sed "s/^/$submenu_indentation/" << EOF
 +	echo	'$(echo "$message" | grub_quote)'

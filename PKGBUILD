@@ -31,8 +31,8 @@ epoch=2
 _pkgver=2.12
 _unifont_ver='16.0.02'
 #pkgver=${_pkgver/-/}
-pkgver='2.12.r226.g56ccc5ed'
-pkgrel=3
+pkgver='2.12.r248.gff7f55307'
+pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -149,7 +149,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'c316a8c52747a61d7b8a612b545491df9c4ba259bcfa8f923705298104eee4c4dcbdcb1d9b3473e355adab9538c4ebd4703cea63cabd6046f9887a54bd7853fb'
         'e1fdd23b992ac48a532f54e91cd77bdd636f938a9eba6bef7fd863a8cd3f5a9bc0d77122a86dc4253d3b1958ade1ea2756cbb79571794c8efdaa97c501cde3c7'
         'bd2c2a833370007e284a9799765502cf599f141207cab33548040f611c8bf16c3326ed7f7f39bb9ebdd7ededf732aae3d933bb03e7fefd5d85af08e5eead4c4b'
-        'b6d152e20768b325e7236a0edcea0331deb6918a41f692a1714b0ade6eedf6c38fa92f74179fefa9e4442f1c8e33cc50d89294e9db1a3bea0f0e6c95ae9084e6'
+        '127a40b9f193b22ed97ba2e5d3d2218b6296028b08073f537f2cdd7c33f5338a2b397a646d8dd769d80f0b14fc08696ca3a47f38b0e381aa490de7328a84506e'
         '29a1ccc44d8f5e5bfc6db719eaecda245c3cae7874fca527a81e3aa72b88c9d01a25a9f175e7d48d297ac65c919f0a0a0afcb686bf9619e6f5db3ffb11915795'
         '6e807c2b9d1065caa0ff3cfae73de005f39266f7bf538a360669f4996b6f2820e8570e61f0e7ea21c377ed7144b891e6bb774156bbb048ecaf484d827cb3a545'
         'b9530aeea084a0bbe0feedcdb9363b9933fab30f90337a79a9e2a535a2a084cbbf6458483a52b749a032858f8dd7b185e88f8fa659081886ef706eea456fc22d'
@@ -163,7 +163,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
 _backports=(
   # current git master for loads of security fixes
   # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
-  "grub-${_pkgver}..56ccc5ed569869fd735074ccebeaa7aab058342d"
+  "grub-${_pkgver}..ff7f5530713c203c90a7dea2b7c56d403673548b"
 )
 
 _reverts=(
