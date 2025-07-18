@@ -31,7 +31,7 @@ epoch=2
 _pkgver=2.12
 _unifont_ver='16.0.03'
 #pkgver=${_pkgver/-/}
-pkgver='2.12.r283.ga4da71da'
+pkgver='2.12.r350.g0e367796'
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
@@ -161,7 +161,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
 _backports=(
   # current git master for loads of security fixes
   # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
-  "grub-${_pkgver}..a4da71dafeea519b034beb159dfe80c486c2107c"
+  "grub-${_pkgver}..0e367796c0f41cb77562aa30282d85d0d2b3480a"
 )
 
 _reverts=(
@@ -243,8 +243,8 @@ prepare() {
   echo "Include Manjaro Linux Modifications"
   patch -Np1 -i "${srcdir}/grub-manjaro-modifications.patch"
 
-  echo "fgrep is obsolescent using grep -F"
-  patch -Np1 -i "${srcdir}/fgrep-is-obsolescent-using-grep-F.patch"
+  #echo "fgrep is obsolescent using grep -F"
+  #patch -Np1 -i "${srcdir}/fgrep-is-obsolescent-using-grep-F.patch"
 
   echo "Add Ubuntu patches"
   echo "Grub should be maybe quiet"
