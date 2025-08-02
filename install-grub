@@ -208,7 +208,7 @@ fi
 # message the user about checking priorities
 if [[ "$grub_type" == "EFI" ]] && [[ "${current_boot_entry,,}" != "${bootloader_id,,}" ]] \
     && [[ "$failed_update" == "false" ]]; then
-    printf "Warning: GRUB bootloader at '%s' was updated." "$(dirname $efi_source_file)"
-    printf "Your booted entry '%s' is not the same as '%s'." "${current_boot_entry}" "${bootloader_id}"
-    printf "This may be a rescue ISO, but if not check your EFI boot priority."
+    printf "Warning: GRUB bootloader at '%s' was updated.\n" "$(dirname $efi_source_file)"
+    printf "Your booted entry '%s' is not the same as '%s'.\n" "${current_boot_entry}" "${bootloader_id}"
+    printf "This may be a rescue ISO, but if not check your EFI boot priority.\n"
 fi
