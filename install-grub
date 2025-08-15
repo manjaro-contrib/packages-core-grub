@@ -160,7 +160,7 @@ if [[ "$grub_type" == "EFI" ]] && [[ -e "/boot/grub/$efi_target/core.efi" ]] \
 --bootloader-id=$bootloader_id --recheck --force"
     else
         _grub_install="grub-install --no-nvram --target=$efi_target --efi-directory=$efi_directory \
-        --bootloader-id=$bootloader_id --recheck --force"
+--bootloader-id=$bootloader_id --recheck --force"
     fi
 elif [[ "$grub_type" == "MBR" ]] && $(scan_grub2 "$disk_name"); then
     cat /tmp/install-grub.log
@@ -186,7 +186,7 @@ if ! $_grub_install ; then
 fi
 
 if [[ "$grub_type" == "EFI" ]] && [[ -e "$efi_source_file" ]] && [[ -e "$efi_target_file" ]] \
-     && [[ "$fallback_is_same" == "true" ]] && [[ "$failed_update" == "false" ]]; then
+     && [[ "$fallback_is_same" == "false" ]] && [[ "$failed_update" == "false" ]]; then
     echo "Update UEFI Fallback file: $efi_source_file"
     $interactive && yes_no
     cp "$efi_source_file" "$efi_target_file"
