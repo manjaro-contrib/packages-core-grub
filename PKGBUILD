@@ -31,7 +31,7 @@ epoch=2
 _pkgver=2.12
 _unifont_ver='16.0.04'
 #pkgver=${_pkgver/-/}
-pkgver='2.12.r350.g0e367796'
+pkgver='2.12.r359.g19c698d1'
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
@@ -114,6 +114,7 @@ source=(
   "git+https://git.savannah.gnu.org/git/grub.git#tag=grub-${_pkgver}?signed"
   'git+https://git.savannah.gnu.org/git/gnulib.git'
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
+  'gettext026.patch'
   '0001-00_header-add-GRUB_COLOR_-variables.patch'
   '0003-support-dropins-for-default-configuration.patch'
   'grub.default'
@@ -138,6 +139,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'SKIP'
         'b245a15d9dfab7f4e63bb32281909164d71d66e25c1ece2ceccbee5b2c1b00a46004c478a1b048c1b3efefd212a0b3f1a35a482fb12ef4489e7b7e09effd375a'
         'SKIP'
+        'bb46caaa7934a66f07df6aed5c4a5506b190925302375c6f0e1065929ddbe5c6f898647ae8c0531f0ed7aeda183bfff16b0357622fa7d94e8d2f50d2201b49df'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
         '441bc2a47606a7f0853c571dbf578040c415bc4bd088bc645c1d6d930e552184af707a7cc677eaf92763e34eb455de50bd6fda9dd7de5be87ccdd35cea03df7c'
@@ -152,7 +154,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         '71e13690f5fa1fbe18928677b47c99a09ae333a0616eb917766f075129f2d51ad31969cd9ec1cd6bb664ab0ffae332d2400079453d9fd1ac69586abd15892e37'
         'b9530aeea084a0bbe0feedcdb9363b9933fab30f90337a79a9e2a535a2a084cbbf6458483a52b749a032858f8dd7b185e88f8fa659081886ef706eea456fc22d'
         '8b93a9564443d1509235c712e82a9aeb1d824df445eccd94f8c5f4d9050e3b1d89edefbc060b79d7ec029a2f53b19d8f31d3a82c7b8f13e8ca109751557b8b03'
-        '03ddf64cebc328bd7eb7cac2ffee3e85cd91bf5138b037d775119728da0d8143e9e6a253e620747988995482971f07a0baaf66c012b0d47c1a89f20de00d44b7'
+        'c1ac6989637e42d7d6d736dc06d01048ccddaf3d42065c33d203d53f6f5c22abad849121a7ca5c8c82f5ba74fd156c91c2a9a10a9ce41962bfb0ce97f6a7bd40'
         'f24e8c7d7a424cbad8e6576ec7e65b9551f7c6b4957f7a25160193afa2681e4bdd1c4651aa8a3b29937927d95daa12f38c85e0bd7491a77dc2a6673ab2838224'
         '910ad34fcbc09bd89730bd763839d60dfc2724baf5ab91c5aa8fa9bfe8e67fc90acc863e4b21d77edb2431da801d2c3ddbb0c373717ab090c3008f4b91a6a97a'
         '842ec1c51a40f6adee2a578ff2ed083975e4f31435ce1f75191edb0731200f36d2689f0158d5da21af05293c7c62e4efc37bf1d7e6dc7211c572e746feeef7cd'
@@ -161,7 +163,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
 _backports=(
   # current git master for loads of security fixes
   # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
-  "grub-${_pkgver}..0e367796c0f41cb77562aa30282d85d0d2b3480a"
+  "grub-${_pkgver}..19c698d123ae46d7a8fbf425067aff2d10dac8ca"
 )
 
 _reverts=(
@@ -211,6 +213,10 @@ prepare() {
     git --no-pager log --oneline "${_l}" "${_c}"
     git revert --mainline 1 --no-commit "${_c}"
   done
+  
+  echo "Patch to fix gettext 0.26 issue..."
+  # https://lists.gnu.org/archive/html/grub-devel/2025-08/msg00160.html
+  patch -Np1 -i "${srcdir}/gettext026.patch"
 
   echo "Patch to enable GRUB_COLOR_* variables in grub-mkconfig..."
   ## Based on http://lists.gnu.org/archive/html/grub-devel/2012-02/msg00021.html
