@@ -224,6 +224,7 @@ prepare() {
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
 
   echo "Patch to support building with gettext-0.26..."
+  # https://lists.gnu.org/archive/html/grub-devel/2025-08/msg00160.html
   patch -Np1 -i "${srcdir}/0004-po-Update-Translations-to-Build-with-Gettext-0.26.patch"
 
   echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
