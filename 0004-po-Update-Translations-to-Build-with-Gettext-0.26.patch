@@ -1,3 +1,8 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Andrew Hamilton <adhamilt@gmail.com>
+Date: Fri, 22 Aug 2025 22:43:17 -0500
+Subject: [PATCH] po: Update Translations to Build with Gettext 0.26
+
 Gettext 0.26 validates format strings. In some cases before
 the GRUB build process was converting newlines sequences (\n)
 to (\<translated character>) which is invalid. Update the impacted
@@ -59,4 +64,5 @@ index 33174bbdc..ce59e576e 100644
 +
 +s,\\נ,\\n,g
 -- 
-2.39.5
+2.51.0
+

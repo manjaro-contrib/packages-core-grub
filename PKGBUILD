@@ -116,9 +116,9 @@ source=(
   "git+https://git.savannah.gnu.org/git/grub.git#tag=grub-${_pkgver}?signed"
   'git+https://git.savannah.gnu.org/git/gnulib.git'
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
-  'gettext026.patch'
   '0001-00_header-add-GRUB_COLOR_-variables.patch'
   '0003-support-dropins-for-default-configuration.patch'
+  '0004-po-Update-Translations-to-Build-with-Gettext-0.26.patch'
   'grub.default'
   'sbat.csv'
   'grub-export-path.patch'
@@ -141,9 +141,9 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         'SKIP'
         'b245a15d9dfab7f4e63bb32281909164d71d66e25c1ece2ceccbee5b2c1b00a46004c478a1b048c1b3efefd212a0b3f1a35a482fb12ef4489e7b7e09effd375a'
         'SKIP'
-        'bb46caaa7934a66f07df6aed5c4a5506b190925302375c6f0e1065929ddbe5c6f898647ae8c0531f0ed7aeda183bfff16b0357622fa7d94e8d2f50d2201b49df'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
+        '7f41bb41548acae5283969f04ef5311d55de5343ee95ffcc903751d5e25cf5b187c8940de010dd53123086e76e147ba770173b03c36da97a413e9853c1a42ffe'
         '441bc2a47606a7f0853c571dbf578040c415bc4bd088bc645c1d6d930e552184af707a7cc677eaf92763e34eb455de50bd6fda9dd7de5be87ccdd35cea03df7c'
         'b21e36cee8a8d1cb62f30e06bfccb29ca589ff4a8fbd8f07fbe3342f25ee6a141a5e92c36387752b9bbc76c2ff32d5f1dbf839af8e56ff706bfe752f2e9dd9f5'
         '71e77b75b4f88554aabfcd5da2fcd0e150dbc199ec1779e458ee935663a7080002069a4944cb22e01a9a0af3a6434fc312db7e03888fe23c2156d25f2ba96c0a'
@@ -215,10 +215,6 @@ prepare() {
     git --no-pager log --oneline "${_l}" "${_c}"
     git revert --mainline 1 --no-commit "${_c}"
   done
-  
-  echo "Patch to fix gettext 0.26 issue..."
-  # https://lists.gnu.org/archive/html/grub-devel/2025-08/msg00160.html
-  patch -Np1 -i "${srcdir}/gettext026.patch"
 
   echo "Patch to enable GRUB_COLOR_* variables in grub-mkconfig..."
   ## Based on http://lists.gnu.org/archive/html/grub-devel/2012-02/msg00021.html
@@ -226,6 +222,9 @@ prepare() {
 
   echo "Patch to support dropins for default configuration..."
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
+
+  echo "Patch to support building with gettext-0.26..."
+  patch -Np1 -i "${srcdir}/0004-po-Update-Translations-to-Build-with-Gettext-0.26.patch"
 
   echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
   sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
