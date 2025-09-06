@@ -18,8 +18,8 @@ fi
    to install it to the MBR or UEFI. Due to potential configuration
    incompatibilities, it is advised to run both, installation and generation
    of configuration:
-     # UEFI: https://wiki.archlinux.org/title/GRUB#Installation
-     # BIOS: https://wiki.archlinux.org/title/GRUB#Installation_2
+     # install-grub
+     # update-grub
 EOM
 
   # return if old package version greater 2.06-0...
@@ -37,8 +37,8 @@ EOM
 post_install() {
   cat <<EOM
 :: Install your bootloader and generate configuration with:
-     # UEFI: https://wiki.archlinux.org/title/GRUB#Installation
-     # BIOS: https://wiki.archlinux.org/title/GRUB#Installation_2
+     # install-grub
+     # update-grub
 EOM
 }
 
