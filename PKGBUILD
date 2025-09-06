@@ -185,9 +185,7 @@ prepare() {
   gzip -cd "${srcdir}/unifont-${_unifont_ver}.bdf.gz" > "unifont.bdf"
 
   echo "Run bootstrap..."
-  ./bootstrap \
-    --gnulib-srcdir="${srcdir}/gnulib/" \
-    --no-git
+  ./bootstrap --gnulib-srcdir="${srcdir}/gnulib"
 
   echo "Make translations reproducible..."
   sed -i '1i /^PO-Revision-Date:/ d' po/*.sed
@@ -212,7 +210,6 @@ _platform=(
   i386-pc
   i386-efi
   x86_64-efi
-  aarch64-efi
 )
 
 build() {
@@ -221,18 +218,16 @@ build() {
     unset CFLAGS
     cp -r "${srcdir}/grub" "${srcdir}/grub-${i}"
     cd "${srcdir}/grub-${i}"
-    echo "Run ./configure for bios build ${i}..."
+    echo "Run ./configure for ${i} build..."
     [[ "${i}" == "i386-pc" ]] && _configure_options+=(--enable-efiemu --with-platform="pc" --target="i386")
     [[ "${i}" == "i386-efi" ]] && _configure_options+=(--disable-efiemu --with-platform="efi" --target="i386")
     [[ "${i}" == "x86_64-efi" ]] && _configure_options+=(--with-platform="efi" --target="x86_64")
     ./configure PACKAGE_VERSION="${epoch}:${pkgver}-${pkgrel}" \
                 ${_configure_options[@]}
-    echo "Build language and doc files only for most common variant..."
     if [[ "${i}" == "x86_64-efi" ]]; then
-    # language directory does not like -j option, build it first with -j1
-      cd po
-      make -j1
-      cd ..
+      echo "Build language and doc files only for most common variant..."
+      # language directory does not like -j option, build it first with -j1
+      make -j1 po/
     else
       sed -i -e 's#po docs##' Makefile
     fi
