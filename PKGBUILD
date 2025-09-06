@@ -6,20 +6,6 @@
 # Contributor: Ronald van Haren <ronald.archlinux.org>
 # Contributor: Keshav Amburay <(the ddoott ridikulus ddoott rat) (aatt) (gemmaeiil) (ddoott) (ccoomm)>
 
-## "1" to enable IA32-EFI build in Arch x86_64, "0" to disable
-_IA32_EFI_IN_ARCH_X64="1"
-
-## "1" to enable EMU build, "0" to disable
-_GRUB_EMU_BUILD="1"
-
-[[ "${CARCH}" == 'x86_64' ]] && _EFI_ARCH='x86_64'
-[[ "${CARCH}" == 'i686' ]] && _EFI_ARCH='i386'
-[[ "${CARCH}" == 'aarch64' ]] && _EFI_ARCH='aarch64'
-
-[[ "${CARCH}" == 'x86_64' ]] && _EMU_ARCH='x86_64'
-[[ "${CARCH}" == 'i686' ]] && _EMU_ARCH='i386'
-[[ "${CARCH}" == 'aarch64' ]] && _EMU_ARCH='aarch64'
-
 pkgname=(
   'grub'
   'update-grub'
@@ -29,40 +15,15 @@ pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
 _pkgver=2.12
-_unifont_ver='16.0.04'
+_unifont_ver=16.0.04
 #pkgver=${_pkgver/-/}
 # the pkgver for git master is generated with:
 # git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
-pkgver='2.12.r359.g19c698d1'
+pkgver=2.12.r359.g19c698d12
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
-backup=(
-  etc/default/grub
-  etc/grub.d/40_custom
-)
-install="${pkgname}.install"
-options=('!makeflags')
-conflicts=(
-  grub-bios
-  grub-common
-  grub-efi-${_EFI_ARCH}
-  grub-emu
-  grub-legacy
-)
-replaces=(
-  grub-common
-  grub-bios
-  grub-emu 
-  grub-efi-${_EFI_ARCH}
-)
-provides=(
-  grub-bios
-  grub-common
-  grub-efi-${_EFI_ARCH}
-  grub-emu
-)
 makedepends=(
   autogen
   device-mapper
@@ -71,8 +32,10 @@ makedepends=(
   gettext
   git
   help2man
+  libusb
   python
   rsync
+  sdl
   texinfo
   ttf-dejavu
   xz
@@ -83,29 +46,6 @@ depends=(
   sh
   xz
 )
-optdepends=(
-  'dosfstools: For grub-mkrescue FAT FS and EFI support'
-  'efibootmgr: For grub-install EFI support'
-  'freetype2: For grub-mkfont usage'
-  'fuse3: For grub-mount usage'
-  'libisoburn: Provides xorriso for generating grub rescue iso using grub-mkrescue'
-  'lzop: For grub-mkrescue LZO support'
-  'mtools: For grub-mkrescue FAT FS support'
-  'os-prober: To detect other OSes when generating grub.cfg in BIOS systems'
-  'update-grub: Script to update Grub Menu on Linux Kernel updates'
-  'install-grub: Script to install Grub after package updates'
-)
-
-if [[ "${_GRUB_EMU_BUILD}" == "1" ]]; then
-  makedepends+=(
-  libusb
-  sdl
-  )
-  optdepends+=(
-  'libusb: For grub-emu USB support'
-  'sdl: For grub-emu SDL support'
-  )
-fi
 
 validpgpkeys=(
   'E53D497F3FA42AD8C9B4D1E835A93B74E82E4209'  # Vladimir 'phcoder' Serbinenko <phcoder@gmail.com>
@@ -169,32 +109,6 @@ _backports=(
 )
 
 _reverts=(
-)
-
-_configure_options=(
-  PACKAGE_VERSION="${epoch}:${pkgver}-${pkgrel}"
-  FREETYPE="pkg-config freetype2"
-  BUILD_FREETYPE="pkg-config freetype2"
-  --enable-nls
-  --enable-device-mapper
-  --enable-cache-stats
-  --enable-boot-time
-  --enable-grub-mkfont
-  --enable-grub-mount
-  --enable-quiet-boot
-  --enable-quick-boot
-  --prefix="/usr"
-  --bindir="/usr/bin"
-  --sbindir="/usr/bin"
-  --mandir="/usr/share/man"
-  --infodir="/usr/share/info"
-  --datarootdir="/usr/share"
-  --sysconfdir="/etc"
-  --program-prefix=""
-  --with-bootdir="/boot"
-  --with-grubdir="grub"
-  --disable-silent-rules
-  --disable-werror
 )
 
 prepare() {
@@ -279,188 +193,124 @@ prepare() {
   sed -i '1i /^PO-Revision-Date:/ d' po/*.sed
 }
 
-_build_grub-common_and_bios() {
-  echo "Set ARCH dependent variables for bios build..."
-  if [[ "${CARCH}" == 'x86_64' ]]; then
-    _EFIEMU="--enable-efiemu"
-  else
-    _EFIEMU="--disable-efiemu"
-  fi
+_configure_options=(
+  --prefix="/usr"
+  --bindir="/usr/bin"
+  --sbindir="/usr/bin"
+  --mandir="/usr/share/man"
+  --infodir="/usr/share/info"
+  --datarootdir="/usr/share"
+  --sysconfdir="/etc"
+  --program-prefix=""
+  --with-bootdir="/boot"
+  --with-grubdir="grub"
+  --enable-boot-time
+  --enable-cache-stats
+)
 
-  echo "Copy the source for building the bios part..."
-  cp -r "${srcdir}/grub/" "${srcdir}/grub-bios/"
-  cd "${srcdir}/grub-bios/"
-
-  echo "Unset all compiler FLAGS for bios build..."
-  unset CFLAGS
-  unset CPPFLAGS
-  unset CXXFLAGS
-  unset LDFLAGS
-  unset MAKEFLAGS
-
-  echo "Run ./configure for bios build..."
-  ./configure \
-    --with-platform="pc" \
-    --target="i386" \
-    "${_EFIEMU}" \
-    --enable-boot-time \
-    "${_configure_options[@]}"
-
-  if [ ! -z "${SOURCE_DATE_EPOCH}" ]; then
-    echo "Make info pages reproducible..."
-    touch -d "@${SOURCE_DATE_EPOCH}" $(find -name '*.texi')
-  fi
-
-  echo "Run make for bios build..."
-  make
-}
-
-_build_grub-efi() {
-  echo "Copy the source for building the ${_EFI_ARCH} efi part..."
-  cp -r "${srcdir}/grub/" "${srcdir}/grub-efi-${_EFI_ARCH}/"
-  cd "${srcdir}/grub-efi-${_EFI_ARCH}/"
-
-  echo "Unset all compiler FLAGS for ${_EFI_ARCH} efi build..."
-  unset CFLAGS
-  unset CPPFLAGS
-  unset CXXFLAGS
-  unset LDFLAGS
-  unset MAKEFLAGS
-
-  echo "Run ./configure for ${_EFI_ARCH} efi build..."
-  ./configure \
-    --with-platform="efi" \
-    --target="${_EFI_ARCH}" \
-    --disable-efiemu \
-    --enable-boot-time \
-    "${_configure_options[@]}"
-
-  echo "Run make for ${_EFI_ARCH} efi build..."
-  make
-}
-
-_build_grub-emu() {
-  echo "Copy the source for building the emu part..."
-  cp -r "${srcdir}/grub/" "${srcdir}/grub-emu/"
-  cd "${srcdir}/grub-emu/"
-
-  echo "Unset all compiler FLAGS for emu build..."
-  unset CFLAGS
-  unset CPPFLAGS
-  unset CXXFLAGS
-  unset LDFLAGS
-  unset MAKEFLAGS
-
-  echo "Run ./configure for emu build..."
-  ./configure \
-    --with-platform="emu" \
-    --target="${_EMU_ARCH}" \
-    --enable-grub-emu-usb=no \
-    --enable-grub-emu-sdl=no \
-    --disable-grub-emu-pci \
-    "${_configure_options[@]}"
-
-  echo "Run make for emu build..."
-  make
-}
+_platform=(
+  i386-pc
+  i386-efi
+  x86_64-efi
+  aarch64-efi
+)
 
 build() {
-  cd "${srcdir}/grub/"
-
-  echo "Build grub bios stuff..."
-  _build_grub-common_and_bios
-
-  echo "Build grub ${_EFI_ARCH} efi stuff..."
-  _build_grub-efi
-
-  if [[ "${CARCH}" == "x86_64" ]] && [[ "${_IA32_EFI_IN_ARCH_X64}" == "1" ]]; then
-    echo "Build grub i386 efi stuff..."
-    _EFI_ARCH="i386" _build_grub-efi
-  fi
-
-  if [[ "${_GRUB_EMU_BUILD}" == "1" ]]; then
-    echo "Build grub emu stuff..."
-    _build_grub-emu
-  fi
+  for i in ${_platform[@]}; do
+    echo "Unset CFLAGS for build..."
+    unset CFLAGS
+    cp -r "${srcdir}/grub" "${srcdir}/grub-${i}"
+    cd "${srcdir}/grub-${i}"
+    echo "Run ./configure for bios build ${i}..."
+    [[ "${i}" == "i386-pc" ]] && _configure_options+=(--enable-efiemu --with-platform="pc" --target="i386")
+    [[ "${i}" == "i386-efi" ]] && _configure_options+=(--disable-efiemu --with-platform="efi" --target="i386")
+    [[ "${i}" == "x86_64-efi" ]] && _configure_options+=(--with-platform="efi" --target="x86_64")
+    ./configure PACKAGE_VERSION="${epoch}:${pkgver}-${pkgrel}" \
+                ${_configure_options[@]}
+    echo "Build language and doc files only for most common variant..."
+    if [[ "${i}" == "x86_64-efi" ]]; then
+    # language directory does not like -j option, build it first with -j1
+      cd po
+      make -j1
+      cd ..
+    else
+      sed -i -e 's#po docs##' Makefile
+    fi
+    echo "Run make for ${i} build..."
+    make
+    if [ ! -z "${SOURCE_DATE_EPOCH}" ]; then
+      echo "Make info pages reproducible..."
+      touch -d "@${SOURCE_DATE_EPOCH}" $(find -name '*.texi')
+    fi
+  done
 }
 
-_package_grub-common_and_bios() {
-  cd "${srcdir}/grub-bios/"
+package_grub() {
+  optdepends=(
+    'dosfstools: For grub-mkrescue FAT FS and EFI support'
+    'efibootmgr: For grub-install EFI support'
+    'freetype2: For grub-mkfont usage'
+    'fuse3: For grub-mount usage'
+    'libisoburn: Provides xorriso for generating grub rescue iso using grub-mkrescue'
+    'libusb: For grub-emu USB support'
+    'lzop: For grub-mkrescue LZO support'
+    'mtools: For grub-mkrescue FAT FS support'
+    'os-prober: To detect other OSes when generating grub.cfg in BIOS systems'
+    'sdl: For grub-emu SDL support'
+    'update-grub: Script to update Grub Menu on Linux Kernel updates'
+    'install-grub: Script to install Grub after package updates'
+  )
+  backup=(
+    etc/default/grub
+    etc/grub.d/40_custom
+  )
+  install="${pkgname}.install"
+  conflicts=(
+    grub-bios
+    grub-common
+    grub-efi-${CARCH}
+    grub-emu
+    grub-legacy
+  )
+  replaces=(
+    grub-common
+    grub-bios
+    grub-emu
+    grub-efi-${CARCH}
+  )
+  provides=(
+    grub-bios
+    grub-common
+    grub-efi-${CARCH}
+    grub-emu
+  )
 
-  echo "Run make install for bios build..."
-  make DESTDIR="${pkgdir}/" bashcompletiondir="/usr/share/bash-completion/completions" install
-
-  echo "Remove gdb debugging related files for bios build..."
-  rm -f "${pkgdir}/usr/lib/grub/i386-pc"/*.module || true
-  rm -f "${pkgdir}/usr/lib/grub/i386-pc"/*.image || true
-  rm -f "${pkgdir}/usr/lib/grub/i386-pc"/{kernel.exec,gdb_grub,gmodule.pl} || true
+  for i in ${_platform[@]}; do
+    cd "${srcdir}/grub-${i}"
+    echo "Run make install for ${i} build..."
+    make DESTDIR="${pkgdir}/" bashcompletiondir="/usr/share/bash-completion/completions" install
+    echo "Remove gdb debugging related files for ${i}..."
+    rm -f "${pkgdir}/usr/lib/grub/${i}"/*.module
+    rm -f "${pkgdir}/usr/lib/grub/${i}"/*.image
+    rm -f "${pkgdir}/usr/lib/grub/${i}"/{kernel.exec,gdb_grub,gmodule.pl}
+  done
+  echo "Install /etc/default/grub (used by grub-mkconfig)..."
+  install -D -m0644 "${srcdir}/grub.default" "${pkgdir}/etc/default/grub"
+  sed -e "s/%PKGVER%/${epoch}:${pkgver}-${pkgrel}/" < "${srcdir}/sbat.csv" > "${pkgdir}/usr/share/grub/sbat.csv"
 
   echo "Install grub background"
-  install -Dm644 "${srcdir}/background.png" "${pkgdir}/usr/share/grub/background.png"  
-
-  echo "Install /etc/default/grub (used by grub-mkconfig)"
-  install -D -m0644 "$srcdir"/grub.default "$pkgdir"/etc/default/grub
+  install -Dm644 "${srcdir}/background.png" "${pkgdir}/usr/share/grub/background.png"
 
   # workaround for quiet fsck
   install -D -m755 "${srcdir}/grub-set-bootflag" "${pkgdir}/usr/bin/grub-set-bootflag"
 }
 
-_package_grub-efi() {
-  cd "${srcdir}/grub-efi-${_EFI_ARCH}/"
-
-  echo "Run make install for ${_EFI_ARCH} efi build..."
-  make DESTDIR="${pkgdir}/" bashcompletiondir="/usr/share/bash-completion/completions" install
-
-  echo "Remove gdb debugging related files for ${_EFI_ARCH} efi build..."
-  rm -f "${pkgdir}/usr/lib/grub/${_EFI_ARCH}-efi"/*.module || true
-  rm -f "${pkgdir}/usr/lib/grub/${_EFI_ARCH}-efi"/*.image || true
-  rm -f "${pkgdir}/usr/lib/grub/${_EFI_ARCH}-efi"/{kernel.exec,gdb_grub,gmodule.pl} || true
-
-  sed -e "s/%PKGVER%/${epoch}:${pkgver}-${pkgrel}/" < "${srcdir}/sbat.csv" > "${pkgdir}/usr/share/grub/sbat.csv"
-}
-
-_package_grub-emu() {
-  cd "${srcdir}/grub-emu/"
-
-  echo "Run make install for emu build..."
-  make DESTDIR="${pkgdir}/" bashcompletiondir="/usr/share/bash-completion/completions" install
-
-  echo "Remove gdb debugging related files for emu build..."
-  rm -f "${pkgdir}/usr/lib/grub/${_EMU_ARCH}-emu"/*.module || true
-  rm -f "${pkgdir}/usr/lib/grub/${_EMU_ARCH}-emu"/*.image || true
-  rm -f "${pkgdir}/usr/lib/grub/${_EMU_ARCH}-emu"/{kernel.exec,gdb_grub,gmodule.pl} || true
-}
-
-package_grub() {
-  install="${pkgname}.install"
-
-  cd "${srcdir}/grub/"
-
-  echo "Package grub ${_EFI_ARCH} efi stuff..."
-  _package_grub-efi
-
-  if [[ "${CARCH}" == "x86_64" ]] && [[ "${_IA32_EFI_IN_ARCH_X64}" == "1" ]]; then
-    echo "Package grub i386 efi stuff..."
-    _EFI_ARCH="i386" _package_grub-efi
-  fi
-
-  if [[ "${_GRUB_EMU_BUILD}" == "1" ]]; then
-    echo "Package grub emu stuff..."
-    _package_grub-emu
-  fi
-
-  echo "Package grub bios stuff..."
-  _package_grub-common_and_bios
-}
-
 package_update-grub() {
   pkgdesc="GNU Grub (2) Update Menu Script"
   depends=(grub)
-  optdepends=()
-  provides=()
   conflicts=('grub-update')
   replaces=('grub-update')
-  backup=()
+
   echo "Install update-grub"
   install -Dm755 "${srcdir}/update-grub" "${pkgdir}/usr/bin/update-grub"
   echo "Install 99-update-grub.hook"
@@ -470,11 +320,8 @@ package_update-grub() {
 package_install-grub() {
   pkgdesc="GNU Grub (2) Install Script on Updates"
   depends=(coreutils efibootmgr gawk grep grub)
-  optdepends=()
-  provides=()
-  conflicts=()
-  replaces=()
   backup=('etc/install-grub.conf')
+
   echo "Install install-grub"
   install -Dm755 "${srcdir}/install-grub" "${pkgdir}/usr/bin/install-grub"
   echo "Install install-grub.conf"
