@@ -19,8 +19,8 @@ _unifont_ver=16.0.04
 #pkgver=${_pkgver/-/}
 # the pkgver for git master is generated with:
 # git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
-pkgver=2.12.r359.g19c698d12
-pkgrel=1
+pkgver=2.12.r359.g19c698d1
+pkgrel=2
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
