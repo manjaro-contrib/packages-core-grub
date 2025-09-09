@@ -15,7 +15,7 @@ pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
 _pkgver=2.12
-_unifont_ver=16.0.04
+_unifont_ver=17.0.01
 #pkgver=${_pkgver/-/}
 # the pkgver for git master is generated with:
 # git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
@@ -79,7 +79,7 @@ source=(
 )
 b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba39210426f6bf6a48d913e6e00df37dc2123ea1b39330f4c47bd9dbac9ae3'
         'SKIP'
-        'b245a15d9dfab7f4e63bb32281909164d71d66e25c1ece2ceccbee5b2c1b00a46004c478a1b048c1b3efefd212a0b3f1a35a482fb12ef4489e7b7e09effd375a'
+        'a57d4d749f88af67c4e59eb8f95e0350f395e950db1670667be15adae2e22471af44e4f2a2dd2375b63dc4a37660812ee1a1fb2ef80cfdda51f74dda17ad14d5'
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
