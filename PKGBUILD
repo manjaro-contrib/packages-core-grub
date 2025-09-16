@@ -20,7 +20,7 @@ _unifont_ver=17.0.01
 # the pkgver for git master is generated with:
 # git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
 pkgver=2.12.r359.g19c698d1
-pkgrel=2
+pkgrel=3
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -204,6 +204,8 @@ _configure_options=(
   --with-grubdir="grub"
   --enable-boot-time
   --enable-cache-stats
+  --enable-quiet-boot
+  --enable-quick-boot
 )
 
 _platform=(
