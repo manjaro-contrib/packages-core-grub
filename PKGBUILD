@@ -20,7 +20,7 @@ _unifont_ver=17.0.01
 # the pkgver for git master is generated with:
 # git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
 pkgver=2.12.r382.gee789e1a
-pkgrel=1
+pkgrel=2
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -68,6 +68,7 @@ source=(
   '0001-grub-maybe-quiet.patch'
   '0002-grub-gettext-quiet.patch'
   '0003-grub-quick-boot.patch'
+  'fix-bli.patch'
   'background.png'
   'update-grub'
   'install-grub'
@@ -92,6 +93,7 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         '127a40b9f193b22ed97ba2e5d3d2218b6296028b08073f537f2cdd7c33f5338a2b397a646d8dd769d80f0b14fc08696ca3a47f38b0e381aa490de7328a84506e'
         '29a1ccc44d8f5e5bfc6db719eaecda245c3cae7874fca527a81e3aa72b88c9d01a25a9f175e7d48d297ac65c919f0a0a0afcb686bf9619e6f5db3ffb11915795'
         '71e13690f5fa1fbe18928677b47c99a09ae333a0616eb917766f075129f2d51ad31969cd9ec1cd6bb664ab0ffae332d2400079453d9fd1ac69586abd15892e37'
+        'e1785d63bdd7c3c1f34acbe9a1ca9e6002ec989d1ab16490d33d4a8177e10a0159956743ec81157652dfb7385abe8e4b9f7773f7b1555bc3b87b17a48ce98061'
         'b9530aeea084a0bbe0feedcdb9363b9933fab30f90337a79a9e2a535a2a084cbbf6458483a52b749a032858f8dd7b185e88f8fa659081886ef706eea456fc22d'
         '8b93a9564443d1509235c712e82a9aeb1d824df445eccd94f8c5f4d9050e3b1d89edefbc060b79d7ec029a2f53b19d8f31d3a82c7b8f13e8ca109751557b8b03'
         'c1ac6989637e42d7d6d736dc06d01048ccddaf3d42065c33d203d53f6f5c22abad849121a7ca5c8c82f5ba74fd156c91c2a9a10a9ce41962bfb0ce97f6a7bd40'
@@ -134,6 +136,8 @@ prepare() {
 
   echo "Patch to support dropins for default configuration..."
   patch -Np1 -i "${srcdir}/0003-support-dropins-for-default-configuration.patch"
+  
+  patch -Np1 -i "${srcdir}/fix-bli.patch"
 
   echo "Fix DejaVuSans.ttf location so that grub-mkfont can create *.pf2 files for starfield theme..."
   sed 's|/usr/share/fonts/dejavu|/usr/share/fonts/dejavu /usr/share/fonts/TTF|g' -i "configure.ac"
