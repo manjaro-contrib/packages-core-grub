@@ -14,12 +14,9 @@ pkgname=(
 pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
-_pkgver=2.12
+_pkgver=2.14-rc1
 _unifont_ver=17.0.02
-#pkgver=${_pkgver/-/}
-# the pkgver for git master is generated with:
-# git describe --abbrev=8 | sed 's|grub-||;s|-|.r|;s|-|.|'
-pkgver=2.12.r418.g6b5c671d
+pkgver=${_pkgver/-/}
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
@@ -76,7 +73,7 @@ source=(
   'update-grub.hook'
   'install-grub.hook'
 )
-b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba39210426f6bf6a48d913e6e00df37dc2123ea1b39330f4c47bd9dbac9ae3'
+b2sums=('576ced94c759e6eecf8a35caff1375b5dbff62c2f956e29a3e035a138b0bbc1a6df22928b92207848045d7779300993f1252f2eaebee35f48c5a02a062742ef9'
         'SKIP'
         'fec3976fa0dc1cab290c43689b3a24ce9ec7f210893270084cfd844406d752a8400b0f99c3a249f092b010746d0a3981c7a0935992ec3b07fd96f4fc91c6dc41'
         'SKIP'
@@ -101,9 +98,6 @@ b2sums=('a6cec7271c3ea54a99f02ee6bc0a5825c8be657af68ba9a32b39a5fe8bcb571fb1ba392
         '7d66232583d30bbade009b56ee733e51ae38ae6eec870b30494e540009b0391a26217a2c1e6980d43b2d3188e1e5e2815601dc0d3ee3b1d2ae9829820efbec28')
 
 _backports=(
-  # current git master for loads of security fixes
-  # https://lists.gnu.org/archive/html/grub-devel/2025-02/msg00024.html
-  "grub-${_pkgver}..6b5c671d35b1b84468da1fef2b9bd8e05682f7e6"
 )
 
 _reverts=(
