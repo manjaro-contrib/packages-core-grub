@@ -15,7 +15,7 @@ pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
 _pkgver=2.14-rc1
-_unifont_ver=17.0.02
+_unifont_ver=17.0.03
 pkgver=${_pkgver/-/}
 pkgrel=1
 url='https://www.gnu.org/software/grub/'
@@ -75,7 +75,7 @@ source=(
 )
 b2sums=('576ced94c759e6eecf8a35caff1375b5dbff62c2f956e29a3e035a138b0bbc1a6df22928b92207848045d7779300993f1252f2eaebee35f48c5a02a062742ef9'
         'SKIP'
-        'fec3976fa0dc1cab290c43689b3a24ce9ec7f210893270084cfd844406d752a8400b0f99c3a249f092b010746d0a3981c7a0935992ec3b07fd96f4fc91c6dc41'
+        'b824e469522adeb5780a2976f45b262c335fdfb142b638f915bdc309e932c7a0f7bfbdd8731cf84b5e19b5e0cae2a5ca1754a580e8dae7603f907f94bceec397'
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
