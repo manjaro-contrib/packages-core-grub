@@ -136,7 +136,7 @@ if [[ $grub_type == "EFI" ]]; then
             if [[ ! -z "$efi_directory" ]]; then
                 efi_source_file="$(find $path -iwholename "*$bootloader_id/$efi_grub_file")"
                 $debug && [[ -e "$efi_source_file" ]] && echo "[D] Found EFI Bootloader: $efi_source_file"
-                efi_target_file="$(find $path -name $efi_boot_file)"
+                efi_target_file="$(find $path -iname $efi_boot_file)"
                 $debug && [[ -e "$efi_target_file" ]] && echo "[D] Found EFI Fallback: $efi_target_file"
                 if [[ -e "$efi_source_file" ]] && [[ -e "$efi_target_file" ]]; then
                     cmp -s "$efi_source_file" "$efi_target_file" && fallback_is_same=true
