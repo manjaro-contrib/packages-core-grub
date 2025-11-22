@@ -17,7 +17,7 @@ epoch=2
 _pkgver=2.14-rc1
 _unifont_ver=17.0.03
 pkgver=${_pkgver/-/}
-pkgrel=1
+pkgrel=2
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -98,6 +98,7 @@ b2sums=('576ced94c759e6eecf8a35caff1375b5dbff62c2f956e29a3e035a138b0bbc1a6df2292
         '7d66232583d30bbade009b56ee733e51ae38ae6eec870b30494e540009b0391a26217a2c1e6980d43b2d3188e1e5e2815601dc0d3ee3b1d2ae9829820efbec28')
 
 _backports=(
+  "grub-${_pkgver}..7debdce1e98907e65223a4b4c53a41345ac45e53"
 )
 
 _reverts=(
