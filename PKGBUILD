@@ -14,10 +14,10 @@ pkgname=(
 pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
-_pkgver=2.14-rc1
+_pkgver=2.14
 _unifont_ver=17.0.03
 pkgver=${_pkgver/-/}
-pkgrel=3
+pkgrel=1
 url='https://www.gnu.org/software/grub/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
@@ -74,7 +74,7 @@ source=(
   'update-grub.hook'
   'install-grub.hook'
 )
-b2sums=('576ced94c759e6eecf8a35caff1375b5dbff62c2f956e29a3e035a138b0bbc1a6df22928b92207848045d7779300993f1252f2eaebee35f48c5a02a062742ef9'
+b2sums=('45cfac7487264e323522e58b87dd1bf70c5c5c87feaf3f70e20e4c484de94be8369bd011ab53ba72959ec9bc9c9159b3327e4965c9ae5a795b20a29fef9eacd1'
         'SKIP'
         'b824e469522adeb5780a2976f45b262c335fdfb142b638f915bdc309e932c7a0f7bfbdd8731cf84b5e19b5e0cae2a5ca1754a580e8dae7603f907f94bceec397'
         'SKIP'
@@ -99,12 +99,13 @@ b2sums=('576ced94c759e6eecf8a35caff1375b5dbff62c2f956e29a3e035a138b0bbc1a6df2292
         '7d66232583d30bbade009b56ee733e51ae38ae6eec870b30494e540009b0391a26217a2c1e6980d43b2d3188e1e5e2815601dc0d3ee3b1d2ae9829820efbec28')
 
 _backports=(
-  "grub-${_pkgver}..29f3131a3632c70129a29d924fcb8ac98f08ee2b"
 )
 
 _reverts=(
   # configure: Check linker for --image-base support
   '1a5417f39a0ccefcdd5440f2a67f84d2d2e26960'
+  # configure: Print a more helpful error if autoconf-archive is not installed
+  'ac042f3f58d33ce9cd5ff61750f06da1a1d7b0eb'
 )
 
 prepare() {
