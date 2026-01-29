@@ -52,7 +52,8 @@ validpgpkeys=(
 
 source=(
   "git+https://git.savannah.gnu.org/git/grub.git#tag=grub-${_pkgver}?signed"
-  'git+https://git.savannah.gnu.org/git/gnulib.git'
+  "git+https://git.savannah.gnu.org/git/gnulib.git"
+  "https://ftp.gnu.org/gnu/${pkgname}/${pkgname}-${pkgver}.tar.xz"{,.sig}
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
   '0001-00_header-add-GRUB_COLOR_-variables.patch'
   '0003-support-dropins-for-default-configuration.patch'
@@ -76,6 +77,8 @@ source=(
 )
 b2sums=('45cfac7487264e323522e58b87dd1bf70c5c5c87feaf3f70e20e4c484de94be8369bd011ab53ba72959ec9bc9c9159b3327e4965c9ae5a795b20a29fef9eacd1'
         'SKIP'
+        '724bb430d8824bec39e6a025cf354a780b79260684c7c4e3d28beb08c8bee10d082a089fcb799f8f5eb6e83abcf8675fb7c5f5ddf443c5c0e61d6f180ee341af'
+        'SKIP'
         'b824e469522adeb5780a2976f45b262c335fdfb142b638f915bdc309e932c7a0f7bfbdd8731cf84b5e19b5e0cae2a5ca1754a580e8dae7603f907f94bceec397'
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
@@ -97,6 +100,7 @@ b2sums=('45cfac7487264e323522e58b87dd1bf70c5c5c87feaf3f70e20e4c484de94be8369bd01
         '910ad34fcbc09bd89730bd763839d60dfc2724baf5ab91c5aa8fa9bfe8e67fc90acc863e4b21d77edb2431da801d2c3ddbb0c373717ab090c3008f4b91a6a97a'
         '842ec1c51a40f6adee2a578ff2ed083975e4f31435ce1f75191edb0731200f36d2689f0158d5da21af05293c7c62e4efc37bf1d7e6dc7211c572e746feeef7cd'
         '7d66232583d30bbade009b56ee733e51ae38ae6eec870b30494e540009b0391a26217a2c1e6980d43b2d3188e1e5e2815601dc0d3ee3b1d2ae9829820efbec28')
+
 
 _backports=(
 )
@@ -178,7 +182,9 @@ prepare() {
   gzip -cd "${srcdir}/unifont-${_unifont_ver}.bdf.gz" > "unifont.bdf"
 
   echo "Run bootstrap..."
-  ./bootstrap --gnulib-srcdir="${srcdir}/gnulib"
+  ./bootstrap \
+    --gnulib-srcdir="${srcdir}/gnulib" \
+    --skip-po
 
   echo "Make translations reproducible..."
   sed -i '1i /^PO-Revision-Date:/ d' po/*.sed
@@ -232,6 +238,12 @@ build() {
       echo "Make info pages reproducible..."
       touch -d "@${SOURCE_DATE_EPOCH}" $(find -name '*.texi')
     fi
+  done
+
+  # Generate grub mo files from dist tarball
+  cd "${srcdir}/${pkgname}-${pkgver}/po"
+  for po in *.po; do
+    msgfmt "${po}" -o "${po%.po}.mo"
   done
 }
 
@@ -287,6 +299,12 @@ package_grub() {
   echo "Install /etc/default/grub (used by grub-mkconfig)..."
   install -D -m0644 "${srcdir}/grub.default" "${pkgdir}/etc/default/grub"
   sed -e "s/%PKGVER%/${epoch}:${pkgver}-${pkgrel}/" < "${srcdir}/sbat.csv" > "${pkgdir}/usr/share/grub/sbat.csv"
+
+  # Install grub mo files from dist tarball
+  cd "${srcdir}/${pkgname}-${pkgver}/po"
+  for mo in *.mo; do
+    install -D -m0644 "${mo}" "${pkgdir}/usr/share/locale/${mo%.mo}/LC_MESSAGES/${pkgname}.mo"
+  done
 
   echo "Install grub background"
   install -Dm644 "${srcdir}/background.png" "${pkgdir}/usr/share/grub/background.png"
