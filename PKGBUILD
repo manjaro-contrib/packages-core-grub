@@ -18,7 +18,7 @@ _pkgver=2.14
 _unifont_ver=17.0.04
 pkgver=${_pkgver/-/}
 pkgrel=1
-url='https://www.gnu.org/software/grub/'
+url='https://gnu-grub.freedesktop.org/'
 arch=('x86_64' 'aarch64')
 license=('GPL-3.0-or-later')
 makedepends=(
@@ -35,8 +35,8 @@ makedepends=(
   sdl
   texinfo
   ttf-dejavu
-  xz
   wget
+  xz
 )
 depends=(
   device-mapper
@@ -50,7 +50,7 @@ validpgpkeys=(
   'BE5C23209ACDDACEB20DB0A28C8189F1988C2166'  # Daniel Kiper <dkiper@net-space.pl>
   '95D2E9AB8740D8046387FD151A09227B1F435A33') # Paul Hardy <unifoundry@unifoundry.com>
 source=(
-  "git+https://git.savannah.gnu.org/git/grub.git#tag=grub-${_pkgver}?signed"
+  "git+https://gitlab.freedesktop.org/gnu-grub/grub.git#tag=grub-${_pkgver}?signed"
   "git+https://git.savannah.gnu.org/git/gnulib.git"
   "https://ftp.gnu.org/gnu/${pkgname}/${pkgname}-${pkgver}.tar.xz"{,.sig}
   "https://ftp.gnu.org/gnu/unifont/unifont-${_unifont_ver}/unifont-${_unifont_ver}.bdf.gz"{,.sig}
