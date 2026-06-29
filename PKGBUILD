@@ -1,5 +1,5 @@
 # Maintainer: Philip Müller <philm[at]manjaro[dot]org>
-# Maintainer: Stefano Capitani <stefano[at]manjaro[dot]org>
+# Contributor: Stefano Capitani <stefano[at]manjaro[dot]org>
 # Contributor: Helmut Stult
 # Contributor: Christian Hesse <mail@eworm.de>
 # Contributor: Tobias Powalowski <tpowa@archlinux.org>
@@ -15,7 +15,7 @@ pkgbase=grub
 pkgdesc='GNU GRand Unified Bootloader (2)'
 epoch=2
 _pkgver=2.14
-_unifont_ver=17.0.04
+_unifont_ver=17.0.05
 pkgver=${_pkgver/-/}
 pkgrel=1
 url='https://gnu-grub.freedesktop.org/'
@@ -78,7 +78,7 @@ b2sums=('45cfac7487264e323522e58b87dd1bf70c5c5c87feaf3f70e20e4c484de94be8369bd01
         'SKIP'
         '724bb430d8824bec39e6a025cf354a780b79260684c7c4e3d28beb08c8bee10d082a089fcb799f8f5eb6e83abcf8675fb7c5f5ddf443c5c0e61d6f180ee341af'
         'SKIP'
-        'e4b46c108efdeb462bdc41bdd26cdacfa1b43b0eb144cbeb99b54d8f8c67eb87ceedcd69df2801136cd6e496dbf9ab9782649cfe69ad73c66ede64da50e4adc8'
+        '3bf679a6fb0114891b5f7d8061b2fb0e6156e538c50d85e281d0814ee9421a2c235839ed36cf28c33daad12462edfc21892eb54844b9a35be2eaa8288d6756b0'
         'SKIP'
         '992c71790785304c28fbaf0dba21dab3e283b199509f0e7e1aa0df08126da75e15b6626c3638279ff2ecaa59b925096d7dbd67d6a53cebd0ce4326ff3719d25b'
         'a7820bfe9bddc34af49de63222b3d2a9788367083e29db13b33120269adbfa1619ac421d8597f662f756592889f5cc5538544a17d9936d1420bd5742282c710c'
@@ -152,7 +152,7 @@ prepare() {
 
   echo 'Export $PATH'
   patch -Np1 -i "${srcdir}/grub-export-path.patch"
-  
+
   # https://bugs.archlinux.org/task/75701
   # https://lists.gnu.org/archive/html/grub-devel/2022-08/msg00374.html
   echo "Don't call fwsetup at all"
