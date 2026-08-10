@@ -1,4 +1,5 @@
 # Maintainer: Philip Müller <philm[at]manjaro[dot]org>
+# Maintainer: Mark Wagie <mark at manjaro dot org>
 # Contributor: Stefano Capitani <stefano[at]manjaro[dot]org>
 # Contributor: Helmut Stult
 # Contributor: Christian Hesse <mail@eworm.de>
