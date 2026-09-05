@@ -103,6 +103,16 @@ b2sums=('45cfac7487264e323522e58b87dd1bf70c5c5c87feaf3f70e20e4c484de94be8369bd01
 
 
 _backports=(
+  # osdep/linux/ofpath: Update strstr() calls
+  '675d8581037dc8996cf6db21a61d26e28f7d44c1'
+  # osdep/linux/ofpath: Correct path_size calculation
+  'b71ae6db282fa25ca4ea6f8169161a2131ee6b9a'
+  # util/probe: Save strrchr() ret val to const data ptr
+  '9f4a586f1227a8287e1d6acd95893f6098756ee2'
+  # util/resolve: Save str[r]chr() ret val to const data ptr
+  'ce6f2b57f5450a8239022dcbfb2d750f273b83cb'
+  # include/grub/i386/pc/int.h: Move GRUB_MACHINE_PCBIOS ifdef
+  '9922ed133c2c754ec9f37198da2b3e3e8a4fd5ff'
 )
 
 _reverts=(
