@@ -199,7 +199,7 @@ _configure_options=(
   --datarootdir="/usr/share"
   --sysconfdir="/etc"
   --program-prefix=""
-  --with-bootdir="/boot"
+  --with-bootdir="boot"
   --with-grubdir="grub"
   --enable-boot-time
   --enable-cache-stats
